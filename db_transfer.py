@@ -45,14 +45,18 @@ class DbTransfer(object):
                 dt_transfer[id] = [curr_transfer[id][0], curr_transfer[id][1]]
 
         self.last_get_transfer = curr_transfer
-        query_head = 'UPDATE user'
+        query_head = 'UPDATE users'
         query_sub_when = ''
         query_sub_when2 = ''
+        query_sub_when3 = ''
         query_sub_in = None
         last_time = time.time()
         for id in dt_transfer.keys():
-            query_sub_when += ' WHEN %s THEN u+%s' % (id, dt_transfer[id][0])
-            query_sub_when2 += ' WHEN %s THEN d+%s' % (id, dt_transfer[id][1])
+            totalU = dt_transfer[id][0]
+            totalD = dt_transfer[id][1]
+            query_sub_when += ' WHEN %s THEN u+%s' % (id, totalU)
+            query_sub_when2 += ' WHEN %s THEN d+%s' % (id, totalD)
+            query_sub_when3 += ' WHEN %s THEN total_transfer+%s' % (id, totalD+totalU)
             if query_sub_in is not None:
                 query_sub_in += ',%s' % id
             else:
@@ -61,6 +65,7 @@ class DbTransfer(object):
             return
         query_sql = query_head + ' SET u = CASE port' + query_sub_when + \
                     ' END, d = CASE port' + query_sub_when2 + \
+                    ' END, total_transfer = CASE port' + query_sub_when3 + \
                     ' END, t = ' + str(int(last_time)) + \
                     ' WHERE port IN (%s)' % query_sub_in
         #print query_sql
@@ -78,7 +83,7 @@ class DbTransfer(object):
         conn = cymysql.connect(host=Config.MYSQL_HOST, port=Config.MYSQL_PORT, user=Config.MYSQL_USER,
                                passwd=Config.MYSQL_PASS, db=Config.MYSQL_DB, charset='utf8')
         cur = conn.cursor()
-        cur.execute("SELECT port, u, d, transfer_enable, passwd, switch, enable FROM user")
+        cur.execute("SELECT port, u, d, transfer_enable, passwd, switch, enable FROM users")
         rows = []
         for r in cur.fetchall():
             rows.append(list(r))
