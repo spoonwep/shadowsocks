@@ -1,7 +1,7 @@
 # shadowsocks
-A Copy of shadowsock-manyuser
+A Copy of shadowsock-manyuser for ssrapid project.
 
-It is a shadowsocks-manyuser copy with some specific configurations, and is for self usage.
+It is a copy of shadowsocks-manyuser with some specific configurations, **DO NOT** use in your project!
 
 original link is here:
 https://github.com/mengskysama/shadowsocks/tree/manyuser
